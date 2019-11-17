@@ -34,15 +34,15 @@ def eprank(G, M, num_iters):
 
     for iter in range(num_iters):
         for p in range(M):  # compute marginal player skills
-            games_won = np.where(G[:, 0] == p)[0]
-            games_lost = np.where(G[:, 1] == p)[0]
+            games_won = np.where(G[:, 0] == p+1)[0]
+            games_lost = np.where(G[:, 1] == p+1)[0]
             Ps[p] = 1./pv + np.sum(Pgs[games_won, 0]) + np.sum(Pgs[games_lost, 1])
             Ms[p] = np.sum(Pgs[games_won, 0] * Mgs[games_won, 0]) / Ps[p] \
                 + np.sum(Pgs[games_lost, 1] * Mgs[games_lost, 1]) / Ps[p]
 
         # (2) compute skill to game messages
-        Psg = Ps[G] - Pgs
-        Msg = (Ps[G] * Ms[G] - Pgs * Mgs) / Psg
+        Psg = Ps[G-1] - Pgs
+        Msg = (Ps[G-1] * Ms[G-1] - Pgs * Mgs) / Psg
 
         # (3) compute game to performance messages
         vgt = 1 + np.sum(1. / Psg, axis=1)

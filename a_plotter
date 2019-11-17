@@ -1,0 +1,29 @@
+import scipy as sp
+import numpy as np
+import scipy.io as sio
+import csv
+from numpy import genfromtxt
+import matplotlib.pyplot as plt
+
+
+
+data = sio.loadmat('tennis_data.mat')
+
+W=data['W']
+G=data['G']
+
+samples = genfromtxt('result.csv', delimiter=',')
+iter = samples.shape[1]
+M = samples.shape[0]
+
+player_1 = 0
+player_2 = 15
+player_3 = 4
+
+print(samples.shape)
+
+plt.plot(range(iter),samples[player_1,:],label=W[player_1])
+plt.plot(range(iter),samples[player_2,:],label=W[player_2])
+plt.plot(range(iter),samples[player_3,:],label=W[player_3])
+plt.legend()
+plt.show()

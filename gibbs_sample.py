@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 
 def gibbs_sample(G, M, num_iters):
-    # number of games
+    # number of games = 1801
     N = G.shape[0]
     # Array containing mean skills of each player, set to prior mean
     w = np.zeros((M, 1))
@@ -18,7 +18,7 @@ def gibbs_sample(G, M, num_iters):
         t = np.zeros((N, 1))
         for g in range(N):
 
-            s = w[G[g, 0]] - w[G[g, 1]]  # difference in skills
+            s = w[G[g, 0]-1] - w[G[g, 1]-1]  # difference in skills
             t[g] = s + np.random.randn()  # Sample performance
             while t[g] < 0:  # rejection step
                 t[g] = s + np.random.randn()  # resample if rejected
@@ -26,11 +26,19 @@ def gibbs_sample(G, M, num_iters):
         # Jointly sample skills given performance differences
         m = np.zeros((M, 1))
         for p in range(M):
-            m[p] =  # TODO: COMPLETE THIS LINE
+            games_played = G == (p + 1)
+            games_played = games_played.astype(np.int)
+            m[p] =  np.dot(t[:,0],games_played[:,0]) - np.dot(t[:,0],games_played[:,1])
+
         iS = np.zeros((M, M))  # Container for sum of precision matrices (likelihood terms)
 
         for g in range(N):
-            # TODO: Build the iS matrix
+            winner = G[g,0] - 1
+            loser = G[g,1] - 1
+            iS[winner,winner] += 1
+            iS[loser,loser] += 1
+            iS[winner,loser] -= 1
+            iS[loser,winner] -= 1
 
         # Posterior precision matrix
         iSS = iS + np.diag(1. / pv)
